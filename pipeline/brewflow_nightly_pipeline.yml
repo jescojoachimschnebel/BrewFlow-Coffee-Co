@@ -1,0 +1,32 @@
+# Vorlage: Query- und Warehouse-Kennungen vor der Verwendung ersetzen.
+resources:
+  jobs:
+    brewflow_nightly_pipeline:
+      name: brewflow_nightly_pipeline
+      schedule:
+        quartz_cron_expression: 48 0 2 * * ?
+        timezone_id: Europe/Berlin
+        pause_status: UNPAUSED
+      tasks:
+        - task_key: copy_to_staging
+          sql_task:
+            query:
+              query_id: REPLACE_WITH_COPY_TO_STAGING_QUERY_ID
+            warehouse_id: REPLACE_WITH_SQL_WAREHOUSE_ID
+        - task_key: load_dimensions
+          depends_on:
+            - task_key: copy_to_staging
+          sql_task:
+            query:
+              query_id: REPLACE_WITH_LOAD_DIMENSIONS_QUERY_ID
+            warehouse_id: REPLACE_WITH_SQL_WAREHOUSE_ID
+        - task_key: load_facts
+          depends_on:
+            - task_key: load_dimensions
+          sql_task:
+            query:
+              query_id: REPLACE_WITH_LOAD_FACTS_QUERY_ID
+            warehouse_id: REPLACE_WITH_SQL_WAREHOUSE_ID
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
